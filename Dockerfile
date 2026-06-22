@@ -1,10 +1,12 @@
-FROM maven:3.9.6-openjdk-21-slim AS build
+# Stage 1: Build file JAR bằng Maven kết hợp Eclipse Temurin Java 21
+FROM maven:3.9.8-eclipse-temurin-21 AS build
 WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
-FROM openjdk:21-jdk-slim
+# Stage 2: Chạy ứng dụng bằng JRE Eclipse Temurin Java 21 tinh gọn
+FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar 
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
